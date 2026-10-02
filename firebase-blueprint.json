@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with level, streaks, and RPG progression.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 200 },
+        "avatar": { "type": "string", "maxLength": 500 },
+        "level": { "type": "number" },
+        "title": { "type": "string", "maxLength": 80 },
+        "rankTier": { "type": "string", "maxLength": 40 },
+        "xp": { "type": "number" },
+        "xpToNextLevel": { "type": "number" },
+        "currentStreak": { "type": "number" },
+        "consecutiveTargetsStreak": { "type": "number" },
+        "streakShields": { "type": "number" },
+        "gems": { "type": "number" },
+        "weightKg": { "type": "number" },
+        "heightCm": { "type": "number" },
+        "dailyGoalSteps": { "type": "number" },
+        "dailyGoalCaloriesBurn": { "type": "number" },
+        "dailyCalorieBudget": { "type": "number" },
+        "updatedAt": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["id", "name", "level", "currentStreak", "gems"]
+    },
+    "DailyQuestLog": {
+      "title": "DailyQuestLog",
+      "description": "Daily quest records tracking consecutive targets hit.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "maxLength": 30 },
+        "steps": { "type": "number" },
+        "caloriesBurned": { "type": "number" },
+        "foodCalories": { "type": "number" },
+        "netCalories": { "type": "number" },
+        "activityTargetMet": { "type": "boolean" },
+        "calorieTargetMet": { "type": "boolean" },
+        "bothTargetsMet": { "type": "boolean" },
+        "consecutiveStreak": { "type": "number" },
+        "updatedAt": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["date", "steps", "caloriesBurned", "bothTargetsMet"]
+    },
+    "Meal": {
+      "title": "Meal",
+      "description": "Logged food entry including Indian cuisine items and photos.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "mealType": { "type": "string", "maxLength": 40 },
+        "calories": { "type": "number" },
+        "proteinG": { "type": "number" },
+        "carbsG": { "type": "number" },
+        "fatG": { "type": "number" },
+        "photoUrl": { "type": "string", "maxLength": 2000 },
+        "isIndianCuisine": { "type": "boolean" },
+        "date": { "type": "string", "maxLength": 30 },
+        "time": { "type": "string", "maxLength": 30 }
+      },
+      "required": ["id", "name", "calories", "date"]
+    },
+    "Workout": {
+      "title": "Workout",
+      "description": "Recorded fitness workout or gym session.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "activityName": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "maxLength": 50 },
+        "durationMinutes": { "type": "number" },
+        "caloriesBurned": { "type": "number" },
+        "intensity": { "type": "string", "maxLength": 30 },
+        "pushupReps": { "type": "number" },
+        "date": { "type": "string", "maxLength": 30 },
+        "xpGained": { "type": "number" }
+      },
+      "required": ["id", "activityName", "caloriesBurned", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile with levels, streaks, and RPG stats."
+    },
+    "/users/{userId}/quest_logs/{date}": {
+      "schema": "DailyQuestLog",
+      "description": "Consecutive daily quest progression logs."
+    },
+    "/users/{userId}/meals/{mealId}": {
+      "schema": "Meal",
+      "description": "Meals tracked by the user including Indian dishes."
+    },
+    "/users/{userId}/workouts/{workoutId}": {
+      "schema": "Workout",
+      "description": "Workout sessions logged by the user."
+    }
+  }
+}

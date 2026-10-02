@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidDateStr(d) {
+      return d is string && d.size() <= 30 && d.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    // Test connection health check document
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // Public Leaderboard Entries: strictly gamification fields only (email, weight, and height strictly forbidden)
+    match /leaderboard_entries/{userId} {
+      allow get, list: if isSignedIn();
+      allow create, update: if isOwner(userId)
+        && request.resource.data.id == userId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && (!('email' in request.resource.data))
+        && (!('weightKg' in request.resource.data))
+        && (!('heightCm' in request.resource.data));
+      allow delete: if isOwner(userId);
+    }
+
+    // User private profile document (strictly owner-only access; collection listing prohibited)
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId)
+        && request.resource.data.id == userId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100;
+      allow update: if isOwner(userId)
+        && request.resource.data.id == userId;
+      allow delete: if isOwner(userId);
+
+      // Quest logs subcollection
+      match /quest_logs/{date} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && isValidDateStr(date)
+          && request.resource.data.date is string;
+        allow delete: if isOwner(userId);
+      }
+
+      // Meals subcollection
+      match /meals/{mealId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && isValidId(mealId)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() <= 120;
+        allow update: if isOwner(userId)
+          && isValidId(mealId);
+        allow delete: if isOwner(userId);
+      }
+
+      // Workouts subcollection
+      match /workouts/{workoutId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && isValidId(workoutId)
+          && request.resource.data.activityName is string
+          && request.resource.data.activityName.size() <= 100;
+        allow update: if isOwner(userId)
+          && isValidId(workoutId);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "ApexQuest Fitness: RPG Tracker",
+  "description": "Android-style gamified fitness tracker with level progression, daily streaks, net caloric intake calculator, manual gym & pushup logging, interactive charts, and global leaderboards.",
+  "requestFramePermissions": ["notifications"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
