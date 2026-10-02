@@ -45,10 +45,7 @@ jobs:
         working-directory: ./android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon 2>&1 | tee /tmp/gradle.log || true
-          grep -A 12 "What went wrong" /tmp/gradle.log | while IFS= read -r line; do echo "::error::$line"; done
-          grep -B 2 -A 5 "A failure occurred" /tmp/gradle.log | while IFS= read -r line; do echo "::error::$line"; done
-          grep -q "BUILD SUCCESSFUL" /tmp/gradle.log
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
