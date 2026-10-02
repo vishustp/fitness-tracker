@@ -43,11 +43,10 @@ jobs:
         working-directory: ./android
         run: |
           chmod +x gradlew
-          if ! ./gradlew assembleDebug --no-daemon --stacktrace > build.log 2>&1; then
+          if ! ./gradlew assembleDebug --no-daemon > build.log 2>&1; then
             cat build.log
-            tail -n 30 build.log | while IFS= read -r line; do
-              echo "::error::$line"
-            done
+            grep -B 2 "FAILED" build.log | head -n 10 | while IFS= read -r line; do echo "::error::$line"; done
+            grep -A 10 "What went wrong:" build.log | while IFS= read -r line; do echo "::error::$line"; done
             exit 1
           fi
 
